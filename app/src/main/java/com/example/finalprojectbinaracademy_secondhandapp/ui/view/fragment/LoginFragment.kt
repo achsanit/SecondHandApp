@@ -12,11 +12,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.LoginRequest
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentLoginBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.AuthViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.PasswordUtils
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
 import com.example.finalprojectbinaracademy_secondhandapp.utils.successToast
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
@@ -50,18 +52,20 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun checkLogin() {
+        val loadingDialog = LoadingDialog(requireContext())
         authViewModel.userLogin.observe(requireActivity()) { userLogin ->
             when(userLogin.status) {
                 Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
+                    loadingDialog.startLoading()
                 }
                 Status.SUCCESS -> {
+                    loadingDialog.dismissLoading()
                     val action = LoginFragmentDirections.actionLoginFragmentToHome2()
                     findNavController().navigate(action)
                     Toast(requireContext()).successToast("Hello ${userLogin.data?.name}...",requireContext())
                 }
                 Status.ERROR -> {
-                    binding.progressBar.visibility = View.GONE
+                    loadingDialog.dismissLoading()
                     Toast(requireContext()).errorToast(userLogin.message.toString(),requireContext())
                 }
             }
@@ -86,6 +90,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             binding.wrapEmail.error = "Format email salah"
         } else {
             binding.wrapEmail.error = null
+        }
+
+        if (!PasswordUtils().validate(password)) {
+            binding.wrapPassword.error = "Harus mengandung upercase, lowercase, angka, dan min. 8 karakter"
+        } else {
+            binding.wrapPassword.error = null
         }
 
         if (TextUtils.isEmpty(password)) {

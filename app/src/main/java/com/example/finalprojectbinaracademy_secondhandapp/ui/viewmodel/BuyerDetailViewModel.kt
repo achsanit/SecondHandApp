@@ -51,6 +51,7 @@ class BuyerDetailViewModel(
 
     fun PostBuyerOrder(request: PostBuyerOrderRequest){
         viewModelScope.launch {
+            _postBuyerOrder.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     dataStore.getAccessToken().collectLatest {
@@ -58,11 +59,15 @@ class BuyerDetailViewModel(
                         if (postBuyerOrder.isSuccessful){
                             _postBuyerOrder.postValue(Resource.success(postBuyerOrder.body()))
                         } else {
-                            _postBuyerOrder.postValue(Resource.error("error PostBuyerOrder", null))
+                            if (postBuyerOrder.code() == 400) {
+                                _postBuyerOrder.postValue(Resource.error("anda sudah order produk ini", null))
+                            } else if (postBuyerOrder.code() == 403) {
+                                _postBuyerOrder.postValue(Resource.error("silahkan login terlebih dahulu", null))
+                            }
                         }
                     }
                 } catch (e: Exception) {
-                    _getProductId.postValue(Resource.error(e.message.toString(),null))
+                    _postBuyerOrder.postValue(Resource.error(e.message.toString(),null))
                 }
             } else {
                 _postBuyerOrder.postValue(Resource.error("please check your internet connection...", null))

@@ -38,13 +38,27 @@ class Diminati : Fragment() {
         saleListViewModel.getSellerOrder()
         saleListViewModel.listDiminati.observe(viewLifecycleOwner) {
             when(it.status) {
+                Status.LOADING -> {
+                    binding.recyclerDiminati.visibility = View.GONE
+                    binding.displayDefault.visibility = View.GONE
+                    binding.shimmerDiminati.visibility = View.VISIBLE
+                    binding.shimmerDiminati.startShimmer()
+                }
                 Status.SUCCESS -> {
+                    binding.shimmerDiminati.visibility = View.GONE
+                    binding.shimmerDiminati.stopShimmer()
+                    binding.recyclerDiminati.visibility = View.VISIBLE
+                    setupView(it.data)
                     if (!it.data.isNullOrEmpty()) {
                         binding.displayDefault.visibility = View.GONE
                     } else {
                         binding.displayDefault.visibility = View.VISIBLE
                     }
-                    setupView(it.data)
+                }
+                Status.ERROR -> {
+                    binding.shimmerDiminati.visibility = View.GONE
+                    binding.shimmerDiminati.stopShimmer()
+                    binding.recyclerDiminati.visibility = View.VISIBLE
                 }
             }
         }

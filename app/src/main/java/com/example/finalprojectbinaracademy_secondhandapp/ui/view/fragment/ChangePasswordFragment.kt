@@ -15,11 +15,13 @@ import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentBuyerNotificationBinding
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentChangePasswordBinding
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentProfileBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.AuthViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.EditProfileViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.PasswordUtils
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Resource
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
+import com.example.finalprojectbinaracademy_secondhandapp.utils.successToast
 import kotlinx.android.synthetic.main.fragment_change_password.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -49,18 +51,19 @@ class ChangePasswordFragment : Fragment() {
     }
 
     private fun checkChangePass() {
+        val loadingDialog = LoadingDialog(requireContext())
         editProfileViewModel.changePass.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.LOADING -> {
-                    loadingChangePass.visibility = View.VISIBLE
+                    loadingDialog.startLoading()
                 }
                 Status.SUCCESS -> {
-                    loadingChangePass.visibility = View.GONE
-                    Toast.makeText(requireContext(),"ubah password berhasil",Toast.LENGTH_SHORT).show()
+                    loadingDialog.dismissLoading()
+                    Toast(requireContext()).successToast("ubah passwrod berhasil", requireContext())
                     findNavController().navigateUp()
                 }
                 Status.ERROR -> {
-                    loadingChangePass.visibility = View.GONE
+                    loadingDialog.dismissLoading()
                     Toast.makeText(requireContext(),it.message,Toast.LENGTH_SHORT).show()
                 }
             }

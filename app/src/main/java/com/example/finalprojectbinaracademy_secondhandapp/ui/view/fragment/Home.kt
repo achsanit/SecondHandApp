@@ -53,7 +53,8 @@ class Home : Fragment(R.layout.fragment_home) {
         homeViewModel.bannerHome()
         observeBanner()
         setupRecycler()
-        observeProduct()
+        observeProducts()
+        filterCategory()
 //        throw RuntimeException("Test Crash")
         binding.goToALlProduct.setOnClickListener {
             val action = HomeDirections.actionHome2ToAllProductFragment()
@@ -78,7 +79,7 @@ class Home : Fragment(R.layout.fragment_home) {
         binding.progressBar.visibility = View.GONE
     }
 
-    private fun observeProduct() {
+    private fun filterCategory() {
         buttonCategoryAll()
 
         binding.apply {
@@ -134,62 +135,100 @@ class Home : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun buttonCategory(id: Int) {
-
-        homeViewModel.getProductOfflineCategory(id)
+    private fun observeProducts() {
         homeViewModel.gettProductOffline.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.let { listProduct ->
-                        list.clear()
                         homeAdapter.submitData(listProduct.take(40))
                     }
-                    binding.progressBar.visibility = View.GONE
+//                    binding.progressBar.visibility = View.GONE
+                    binding.shimmerProduct.stopShimmer()
+                    binding.shimmerProduct.visibility = View.GONE
                     binding.goToALlProduct.visibility = View.VISIBLE
+                    binding.rvProductHome.visibility = View.VISIBLE
                 }
                 Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
+//                    binding.progressBar.visibility = View.VISIBLE
+                    binding.shimmerProduct.visibility = View.VISIBLE
+                    binding.shimmerProduct.startShimmer()
                     binding.goToALlProduct.visibility = View.GONE
+                    binding.rvProductHome.visibility = View.GONE
                 }
                 Status.ERROR -> {
-                    binding.progressBar.visibility = View.GONE
+//                    binding.progressBar.visibility = View.GONE
+                    binding.shimmerProduct.stopShimmer()
+                    binding.shimmerProduct.visibility = View.GONE
                     binding.goToALlProduct.visibility = View.VISIBLE
+                    binding.rvProductHome.visibility = View.VISIBLE
                     Toast(requireContext()).errorToast(
                         it.message.toString(),
                         requireContext()
                     )
+                    it.data?.let { listProduct ->
+                        homeAdapter.submitData(listProduct.take(40))
+                    }
                 }
             }
         }
     }
 
+    private fun buttonCategory(id: Int) {
+
+        homeViewModel.getProductOfflineCategory(id)
+//        homeViewModel.gettProductOffline.observe(viewLifecycleOwner) {
+//            when (it.status) {
+//                Status.SUCCESS -> {
+//                    it.data?.let { listProduct ->
+//                        list.clear()
+//                        homeAdapter.submitData(listProduct.take(40))
+//                    }
+//                    binding.progressBar.visibility = View.GONE
+//                    binding.goToALlProduct.visibility = View.VISIBLE
+//                }
+//                Status.LOADING -> {
+//                    binding.progressBar.visibility = View.VISIBLE
+//                    binding.goToALlProduct.visibility = View.GONE
+//                }
+//                Status.ERROR -> {
+//                    binding.progressBar.visibility = View.GONE
+//                    binding.goToALlProduct.visibility = View.VISIBLE
+//                    Toast(requireContext()).errorToast(
+//                        it.message.toString(),
+//                        requireContext()
+//                    )
+//                }
+//            }
+//        }
+    }
+
     private fun buttonCategoryAll() {
 
         homeViewModel.getProductOfflineAll()
-        homeViewModel.gettProductOffline.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    it.data?.let { listProduct ->
-                        list.clear()
-                        homeAdapter.submitData(listProduct.take(40))
-                    }
-                    binding.progressBar.visibility = View.GONE
-                    binding.goToALlProduct.visibility = View.VISIBLE
-                }
-                Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.goToALlProduct.visibility = View.GONE
-                }
-                Status.ERROR -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.goToALlProduct.visibility = View.VISIBLE
-                    Toast(requireContext()).errorToast(
-                        it.message.toString(),
-                        requireContext()
-                    )
-                }
-            }
-        }
+//        homeViewModel.gettProductOffline.observe(viewLifecycleOwner) {
+//            when (it.status) {
+//                Status.SUCCESS -> {
+//                    it.data?.let { listProduct ->
+//                        list.clear()
+//                        homeAdapter.submitData(listProduct.take(40))
+//                    }
+//                    binding.progressBar.visibility = View.GONE
+//                    binding.goToALlProduct.visibility = View.VISIBLE
+//                }
+//                Status.LOADING -> {
+//                    binding.progressBar.visibility = View.VISIBLE
+//                    binding.goToALlProduct.visibility = View.GONE
+//                }
+//                Status.ERROR -> {
+//                    binding.progressBar.visibility = View.GONE
+//                    binding.goToALlProduct.visibility = View.VISIBLE
+//                    Toast(requireContext()).errorToast(
+//                        it.message.toString(),
+//                        requireContext()
+//                    )
+//                }
+//            }
+//        }
     }
 
 
@@ -198,29 +237,48 @@ class Home : Fragment(R.layout.fragment_home) {
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.let { listBanner ->
+                        listImageSliderAdapter.clear()
                         listImageSliderAdapter.addAll(listBanner)
                         imageSlider()
-                        binding.progressBarBanner.visibility = View.GONE
+//                        binding.progressBarBanner.visibility = View.GONE
                     }
                 }
                 Status.ERROR -> {
-                    binding.progressBarBanner.visibility = View.GONE
+//                    binding.progressBarBanner.visibility = View.GONE
+                    binding.shimmerBanner.startShimmer()
+                    binding.shimmerBanner.visibility = View.GONE
                     Toast(requireContext())
                         .errorToast(
                             it.message.toString(),
                             requireContext()
                         )
+
+                    it.data?.let {
+                        listImageSliderAdapter.clear()
+                        listImageSliderAdapter.addAll(it)
+                        imageSlider()
+                    }
                 }
                 Status.LOADING -> {
-                    binding.progressBarBanner.visibility = View.VISIBLE
+//                    binding.progressBarBanner.visibility = View.VISIBLE
+                    binding.shimmerBanner.startShimmer()
+                    binding.piewpager.visibility = View.GONE
                 }
             }
         }
     }
 
     private fun imageSlider() {
+        binding.piewpager.visibility = View.VISIBLE
+        binding.shimmerBanner.startShimmer()
+        binding.shimmerBanner.visibility = View.GONE
         adapterSlider = ImageSliderAdapter(listImageSliderAdapter)
-        binding.piewpager.adapter = adapterSlider
+        val viewpager = binding.piewpager
+        viewpager.adapter = adapterSlider
+
+        binding.indicatorSlider.attachToPager(viewpager)
+
+
     }
 
     override fun onDestroy() {

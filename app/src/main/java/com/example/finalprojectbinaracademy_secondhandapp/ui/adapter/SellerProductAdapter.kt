@@ -65,6 +65,10 @@ class SellerProductAdapter(private val handleClick: SellerProductOnClick): ListA
                 holder.itemView.saleListDimitaniItem.setOnClickListener {
                     handleClick.onItemClick(item)
                 }
+                holder.itemView.saleListDimitaniItem.setOnLongClickListener {
+                    handleClick.onItemLongClick(item)
+                    return@setOnLongClickListener true
+                }
             }
             is HeaderViewHolder -> {
                 holder.itemView.ivGoToPostProduct.setOnClickListener {
@@ -78,6 +82,7 @@ class SellerProductAdapter(private val handleClick: SellerProductOnClick): ListA
 
 interface SellerProductOnClick {
     fun onItemClick(data: SellerProduct)
+    fun onItemLongClick(data: SellerProduct)
     fun onHeaderClick()
 }
 

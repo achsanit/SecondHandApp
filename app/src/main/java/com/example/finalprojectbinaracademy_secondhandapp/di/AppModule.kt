@@ -2,8 +2,9 @@ package com.example.finalprojectbinaracademy_secondhandapp.di
 
 import android.content.Context
 import com.example.finalprojectbinaracademy_secondhandapp.BuildConfig
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiService
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.utils.NetworkHelper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -18,7 +19,7 @@ val appModule = module {
     single { provideOkHttpClient() }
     single { provideRetrofit(get(),BuildConfig.BASE_URL) }
     single { provideApiService(get()) }
-    single { ApiHelperImpl(get()) }
+    single { ApiHelper(get()) }
 }
 
 private fun provideNetworkHelper(context: Context) = NetworkHelper(context)

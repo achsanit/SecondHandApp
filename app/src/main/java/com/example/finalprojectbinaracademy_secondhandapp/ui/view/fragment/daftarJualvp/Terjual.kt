@@ -46,16 +46,28 @@ class Terjual : Fragment() {
     private fun observeSoldOrder() {
         saleListViewModel.listSold.observe(viewLifecycleOwner) {
             when (it.status) {
+                Status.LOADING -> {
+                    binding.recycler.visibility = View.GONE
+                    binding.shimmerTerjual.startShimmer()
+                    binding.shimmerTerjual.visibility = View.VISIBLE
+                    binding.displayDefault.visibility = View.GONE
+                }
                 Status.SUCCESS -> {
                     if (!it.data.isNullOrEmpty()) {
                         binding.displayDefault.visibility = View.GONE
                     } else {
                         binding.displayDefault.visibility = View.VISIBLE
                     }
+                    binding.recycler.visibility = View.VISIBLE
+                    binding.shimmerTerjual.stopShimmer()
+                    binding.shimmerTerjual.visibility = View.GONE
                     setupView(it.data)
                 }
                 Status.ERROR -> {
                     Toast(requireContext()).errorToast(it.message.toString(), requireContext())
+                    binding.recycler.visibility = View.VISIBLE
+                    binding.shimmerTerjual.stopShimmer()
+                    binding.shimmerTerjual.visibility = View.GONE
                 }
             }
         }

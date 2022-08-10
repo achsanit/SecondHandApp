@@ -3,9 +3,9 @@ package com.example.finalprojectbinaracademy_secondhandapp.data.remote.repositor
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.GetProductResponseItem
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 
-class ProductPageSource(private val apiHelperImpl: ApiHelperImpl): PagingSource<Int,GetProductResponseItem>() {
+class ProductPageSource(private val apiHelper: ApiHelper): PagingSource<Int,GetProductResponseItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GetProductResponseItem> {
         return try {
@@ -13,7 +13,8 @@ class ProductPageSource(private val apiHelperImpl: ApiHelperImpl): PagingSource<
             val params = HashMap<String,String>()
             params["page"] = position.toString()
             params["per_page"] = "20"
-            val response = apiHelperImpl.getBuyerProduct(params)
+            params["status"] = "available"
+            val response = apiHelper.getBuyerProduct(params)
 
             return LoadResult.Page(
                 data = response.body()!!,

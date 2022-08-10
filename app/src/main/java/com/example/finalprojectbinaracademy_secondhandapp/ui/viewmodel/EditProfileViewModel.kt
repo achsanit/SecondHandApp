@@ -57,6 +57,7 @@ class EditProfileViewModel(
 
     fun updateProfile(image:File,name: String,phone: String,address: String,city: String) {
         viewModelScope.launch {
+            _updateProfile.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     dataStore.getAccessToken().collectLatest { accessToken ->
@@ -90,6 +91,7 @@ class EditProfileViewModel(
 
     fun changePassword(currentPass: String, newPass: String, confirmPass: String) {
         viewModelScope.launch {
+            _changePass.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     val current = currentPass.toRequestBody("text/plain".toMediaTypeOrNull())

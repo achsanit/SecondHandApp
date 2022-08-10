@@ -12,10 +12,12 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentPreviewPostProductBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.SellViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
 import com.example.finalprojectbinaracademy_secondhandapp.utils.rupiah
+import com.example.finalprojectbinaracademy_secondhandapp.utils.successToast
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PreviewPostProduct : Fragment() {
@@ -42,7 +44,6 @@ class PreviewPostProduct : Fragment() {
         }
 
         binding.btnPostProductPreview.setOnClickListener {
-            binding.loadingPreviewPost.visibility = View.VISIBLE
             postProduct()
         }
         checkPostProduct()
@@ -54,19 +55,20 @@ class PreviewPostProduct : Fragment() {
     }
 
     private fun checkPostProduct() {
+        val loadingDialog = LoadingDialog(requireContext())
         sellViewModel.postProduct.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.LOADING -> {
-
+                    loadingDialog.startLoading()
                 }
                 Status.SUCCESS -> {
-                    Toast.makeText(requireContext(),"Posting product successfully..", Toast.LENGTH_SHORT).show()
-                    binding.loadingPreviewPost.visibility = View.GONE
+                    Toast(requireContext()).successToast("Produk berhasil diteribitkan.",requireContext())
+                    loadingDialog.dismissLoading()
                     val action = PreviewPostProductDirections.actionPreviewPostProductToDaftarJual()
                     findNavController().navigate(action,NavOptions.Builder().setPopUpTo(R.id.seller_post_product, true).build())
                 }
                 Status.ERROR -> {
-                    binding.loadingPreviewPost.visibility = View.GONE
+                    loadingDialog.dismissLoading()
                     Toast(requireContext()).errorToast(it.message.toString(),requireContext())
                 }
             }

@@ -20,6 +20,7 @@ import com.bumptech.glide.request.target.Target
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.PostBuyerOrderRequest
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentBuyerDetailProdukBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.BuyerDetailViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
@@ -37,7 +38,6 @@ class BuyerDetailProduk : Fragment(R.layout.fragment_buyer_detail_produk) {
     private val args: BuyerDetailProdukArgs by navArgs()
     private val buyerDetailViewModel: BuyerDetailViewModel by viewModel()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,6 +50,7 @@ class BuyerDetailProduk : Fragment(R.layout.fragment_buyer_detail_produk) {
         super.onViewCreated(view, savedInstanceState)
 
         showDetailProdukBuyer()
+        observeOrder()
 
         binding.btnBackDetail.setOnClickListener {
             findNavController().navigateUp()
@@ -163,30 +164,63 @@ class BuyerDetailProduk : Fragment(R.layout.fragment_buyer_detail_produk) {
             } else {
 
                 val etBuyerBidBuyerr = dialog.etBidBuyerr.text.toString()
-                val request =
-                    PostBuyerOrderRequest(args.idProdukDetail.toString(), etBuyerBidBuyerr)
+                val request = PostBuyerOrderRequest(args.idProdukDetail.toString(), etBuyerBidBuyerr)
                 buyerDetailViewModel.PostBuyerOrder(request)
-                buyerDetailViewModel.postBuyerOrder.observe(viewLifecycleOwner) { input ->
+                dialog.dismiss()
+                dialog.window!!.attributes.windowAnimations = R.style.DialogAnimation
 
-                    if (input != null) {
-                        dialog.dismiss()
-                        dialog.window!!.attributes.windowAnimations = R.style.DialogAnimation
+//                buyerDetailViewModel.postBuyerOrder.observe(viewLifecycleOwner) { input ->
+//
+//                    if (input != null) {
+//                        dialog.dismiss()
+//                        dialog.window!!.attributes.windowAnimations = R.style.DialogAnimation
+//
+//                        Toast(requireContext()).successToast(
+//                            "Harga tawarmu berhasil dikirim\nke penjual",
+//                            requireContext()
+//                        )
+//
+//                        binding.butonNegoDetailProdukBuyer.visibility = View.GONE
+//                        binding.butonMenungguResponPenjual.visibility = View.VISIBLE
+//
+//                    } else {
+//                        Toast(requireContext())
+//                            .errorToast(
+//                                "Failed to bid this product",
+//                                requireContext()
+//                            )
+//                    }
+//                }
+            }
+        }
+    }
 
-                        Toast(requireContext()).successToast(
-                            "Harga tawarmu berhasil dikirim\nke penjual",
+    private fun observeOrder() {
+        val loading = LoadingDialog(requireContext())
+        buyerDetailViewModel.postBuyerOrder.observe(viewLifecycleOwner) {
+            when (it.status) {
+                Status.LOADING -> {
+                    loading.startLoading()
+                }
+                Status.SUCCESS -> {
+                    loading.dismissLoading()
+
+                    binding.butonNegoDetailProdukBuyer.visibility = View.GONE
+                    binding.butonMenungguResponPenjual.visibility = View.VISIBLE
+
+                    Toast(requireContext()).successToast(
+                        "Harga tawarmu berhasil dikirim\nke penjual",
+                        requireContext()
+                    )
+                }
+                Status.ERROR -> {
+                    loading.dismissLoading()
+
+                    Toast(requireContext())
+                        .errorToast(
+                            it.message.toString(),
                             requireContext()
                         )
-
-                        binding.butonNegoDetailProdukBuyer.visibility = View.GONE
-                        binding.butonMenungguResponPenjual.visibility = View.VISIBLE
-
-                    } else {
-                        Toast(requireContext())
-                            .errorToast(
-                                "Failed to bid this product",
-                                requireContext()
-                            )
-                    }
                 }
             }
         }

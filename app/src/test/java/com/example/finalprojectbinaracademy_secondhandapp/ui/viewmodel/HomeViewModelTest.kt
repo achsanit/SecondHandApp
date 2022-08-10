@@ -7,18 +7,17 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.datastore.DataStoreManager
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDao
-import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.Banner
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.Product
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.repository.RemoteRepository
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiService
 import com.example.finalprojectbinaracademy_secondhandapp.utils.NetworkHelper
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Resource
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Assert.*
 
 import org.junit.Before
 import org.junit.Rule
@@ -32,8 +31,8 @@ import retrofit2.Response
 @RunWith(AndroidJUnit4::class)
 class HomeViewModelTest {
 
-    private lateinit var apiHelperImpl: ApiHelperImpl
-    private lateinit var localDaoHelperImpl: LocalDaoHelperImpl
+    private lateinit var apiHelper: ApiHelper
+    private lateinit var localDaoHelper: LocalDaoHelper
     private lateinit var remoteRepository: RemoteRepository
     private lateinit var networkHelper: NetworkHelper
     private lateinit var dataStoreManager: DataStoreManager
@@ -57,9 +56,9 @@ class HomeViewModelTest {
         MockitoAnnotations.openMocks(this)
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        apiHelperImpl = ApiHelperImpl(apiService)
-        localDaoHelperImpl = LocalDaoHelperImpl(localDao)
-        remoteRepository = RemoteRepository(apiHelperImpl, localDaoHelperImpl)
+        apiHelper = ApiHelper(apiService)
+        localDaoHelper = LocalDaoHelper(localDao)
+        remoteRepository = RemoteRepository(apiHelper, localDaoHelper)
         networkHelper = NetworkHelper(context)
         dataStoreManager = DataStoreManager(context)
 

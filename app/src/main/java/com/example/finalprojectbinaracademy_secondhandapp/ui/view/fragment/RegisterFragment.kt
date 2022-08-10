@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.RegisterRequest
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentRegisterBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.AuthViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.PasswordUtils
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
@@ -52,20 +53,24 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     private fun checkingRegister() {
+        val loadingDialog = LoadingDialog(requireContext())
         registerViewModel.userRegis.observe(viewLifecycleOwner) { user ->
             when(user.status) {
                 Status.LOADING -> {
-                    binding.progressBarRegister.visibility = View.VISIBLE
+//                    binding.progressBarRegister.visibility = View.VISIBLE
+                    loadingDialog.startLoading()
                 }
                 Status.SUCCESS -> {
+                    loadingDialog.dismissLoading()
                     val action = RegisterFragmentDirections.actionRegisterToLoginFragment()
                     findNavController().navigate(action,
                     NavOptions.Builder().setPopUpTo(R.id.register, true).build())
-                    binding.progressBarRegister.visibility = View.GONE
+//                    binding.progressBarRegister.visibility = View.GONE
                     Toast(requireContext()).successToast("Registration successfully",requireContext())
                 }
                 Status.ERROR -> {
-                    binding.progressBarRegister.visibility = View.GONE
+                    loadingDialog.dismissLoading()
+//                    binding.progressBarRegister.visibility = View.GONE
                     Toast(requireContext()).errorToast("Registration failed",requireContext())
                 }
             }
@@ -79,11 +84,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         val confirmpass = binding.etConfirmPass.text.toString()
 
         if (inputCheck(name,email,pass,confirmpass)) {
-                            //dataclass
             val request = RegisterRequest("DEFAULT_ADDRESS","DEFAULT_CITY",email,name,null,pass,"000")
-                            //vm
             registerViewModel.userRegister(request)
-
         } else {
             validateErrorInput(name,email,pass,confirmpass)
         }

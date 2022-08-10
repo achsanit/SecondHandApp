@@ -18,6 +18,7 @@ import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.RequestPostProduct
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentSellerPostProductBinding
 import com.example.finalprojectbinaracademy_secondhandapp.ui.adapter.SpinnerAdapter
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.SellViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
@@ -45,6 +46,8 @@ class SellerPostProduct : Fragment(R.layout.fragment_seller_post_product) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val loadingDialog = LoadingDialog(requireContext())
+
         getCity()
         checkUserLogin()
         setupView()
@@ -55,10 +58,9 @@ class SellerPostProduct : Fragment(R.layout.fragment_seller_post_product) {
             goToPreview()
         }
         binding.button5.setOnClickListener {
-            binding.loadingPost.visibility = View.VISIBLE
             postProduct()
         }
-        checkPostProduct()
+        checkPostProduct(loadingDialog)
         binding.btnBackPostProduct.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -90,20 +92,24 @@ class SellerPostProduct : Fragment(R.layout.fragment_seller_post_product) {
         }
     }
 
-    private fun checkPostProduct() {
+    private fun checkPostProduct(loadingDialog: LoadingDialog) {
+//        val loadingDialog = LoadingDialog(requireContext())
         sellViewModel.postProduct.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.LOADING -> {
-                    binding.loadingPost.visibility = View.VISIBLE
+//                    binding.loadingPost.visibility = View.VISIBLE
+                    loadingDialog.startLoading()
                 }
                 Status.SUCCESS -> {
-                    binding.loadingPost.visibility = View.GONE
+                    loadingDialog.dismissLoading()
+//                    binding.loadingPost.visibility = View.GONE
                     Toast(requireContext()).successToast("Produk berhasil diteribitkan.",requireContext())
                     val action = SellerPostProductDirections.actionSellerPostProductToDaftarJual()
                     findNavController().navigate(action,NavOptions.Builder().setPopUpTo(R.id.seller_post_product, true).build())
                 }
                 Status.ERROR -> {
-                    binding.loadingPost.visibility = View.GONE
+                    loadingDialog.dismissLoading()
+//                    binding.loadingPost.visibility = View.GONE
                     Toast(requireContext()).errorToast(it.message.toString(),requireContext())
                 }
             }

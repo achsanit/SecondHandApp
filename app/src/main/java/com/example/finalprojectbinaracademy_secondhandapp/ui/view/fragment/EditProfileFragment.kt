@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentEditProfileBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.EditProfileViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
@@ -128,18 +129,22 @@ class EditProfileFragment : Fragment(R.layout.fragment_edit_profile) {
         }
 
     private fun checkProfile() {
+        val loadingDialog = LoadingDialog(requireContext())
         editProfileViewModel.updateProfile.observe(viewLifecycleOwner) {
             when(it.status) {
                 Status.SUCCESS -> {
+                    loadingDialog.dismissLoading()
                     Toast(requireContext()).successToast("update profile successfully..",requireContext())
-                    binding.pbProfile.visibility = View.GONE
+//                    binding.pbProfile.visibility = View.GONE
                 }
                 Status.ERROR -> {
                     Toast(requireContext()).errorToast(it.message.toString(),requireContext())
-                    binding.pbProfile.visibility = View.GONE
+//                    binding.pbProfile.visibility = View.GONE
+                    loadingDialog.dismissLoading()
                 }
                 Status.LOADING -> {
-                    binding.pbProfile.visibility = View.VISIBLE
+//                    binding.pbProfile.visibility = View.VISIBLE
+                    loadingDialog.startLoading()
                 }
             }
         }

@@ -97,6 +97,7 @@ class SaleListViewModel(
 
     fun getSellerSold(status: String) {
         viewModelScope.launch {
+            _listSold.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     dataStore.getAccessToken().collectLatest {
@@ -119,6 +120,7 @@ class SaleListViewModel(
 
     fun getSellerOrder() {
         viewModelScope.launch {
+            _listDiminati.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     dataStore.getAccessToken().collectLatest {
@@ -159,6 +161,7 @@ class SaleListViewModel(
 
     fun patchOrder(idOrder: Int,status: String) {
         viewModelScope.launch {
+            _patchOrder.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     val statusUpdate = status.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -182,6 +185,7 @@ class SaleListViewModel(
 
     fun patchStatusProduct(idOrder: Int,status: String) {
         viewModelScope.launch {
+            _patchStatusProduct.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     val statusUpdate = status.toRequestBody("text/plain".toMediaTypeOrNull())

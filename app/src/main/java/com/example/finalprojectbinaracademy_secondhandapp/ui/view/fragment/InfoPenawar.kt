@@ -20,6 +20,7 @@ import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.GetS
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentInfoPenawarBinding
 import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.bottomsheet.BottomSheetAcceptBid
 import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.bottomsheet.UpdateStatusBottomSheet
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.SaleListViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.convertISOTimeToDate
@@ -171,9 +172,11 @@ class InfoPenawar : Fragment() {
     }
 
     private fun checkUpdateOrder() {
+        val loadingDialog = LoadingDialog(requireContext())
         saleListViewModel.patchOrder.observe(viewLifecycleOwner) {
             when(it.status) {
                 Status.SUCCESS -> {
+                    loadingDialog.dismissLoading()
                     if (it.data?.status == "accepted") {
                         bottomSheetSuccessAcc()
                         binding.accOrDecline.visibility = View.GONE
@@ -185,6 +188,10 @@ class InfoPenawar : Fragment() {
                 }
                 Status.ERROR -> {
                     Toast(requireContext()).errorToast(it.message.toString(),requireContext())
+                    loadingDialog.dismissLoading()
+                }
+                Status.LOADING -> {
+                    loadingDialog.startLoading()
                 }
             }
         }

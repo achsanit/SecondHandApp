@@ -29,11 +29,8 @@ class HomeViewModel(
     val getBannerHome: LiveData<Resource<List<Banner>>>
         get() = _getBannerHome
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
     init {
-        bannerHome()
+//        bannerHome()
     }
 
     fun bannerHome() {
@@ -46,7 +43,8 @@ class HomeViewModel(
                     if (response.isSuccessful) {
                         _getBannerHome.postValue(Resource.success(response.body()))
                     } else {
-                        _getBannerHome.postValue(Resource.error("failed to get data banner",null))
+                        val response = remoteRepository.getBannerOffline()
+                        _getBannerHome.postValue(Resource.error("failed to get data banner",response))
                     }
                 } catch (e: Exception) {
                     _getBannerHome.postValue(Resource.error(e.message.toString(),null))
@@ -67,11 +65,19 @@ class HomeViewModel(
                 try {
                     val params = HashMap<String,String>()
                     params["page"] = "1"
+                    params["status"] = "available"
                     params["per_page"] = ""
+
                     val response = remoteRepository.getProductBoundResource(params)
-                    _getProductOffline.postValue(Resource.success(response))
+                    if (response.isSuccessful) {
+                        _getProductOffline.postValue(Resource.success(response.body()))
+                    } else {
+                        val response = remoteRepository.getProductOffline()
+                        _getProductOffline.postValue(Resource.error("failed to get data from server",response))
+                    }
                 } catch (e: Exception) {
-                    _getProductOffline.postValue(Resource.error("failed to get data from server",null))
+                    val response = remoteRepository.getProductOffline()
+                    _getProductOffline.postValue(Resource.error("failed to get data from server",response))
                 }
             } else {
                 val response = remoteRepository.getProductOffline()
@@ -90,9 +96,16 @@ class HomeViewModel(
                     params["per_page"] = ""
                     params["category_id"] = categoryId.toString()
                     val response = remoteRepository.getProductBoundResource(params)
-                    _getProductOffline.postValue(Resource.success(response))
+
+                    if (response.isSuccessful) {
+                        _getProductOffline.postValue(Resource.success(response.body()))
+                    } else {
+                        val response = remoteRepository.getProductOffline()
+                        _getProductOffline.postValue(Resource.error("failed to get data from server",response))
+                    }
                 } catch (e: Exception) {
-                    _getProductOffline.postValue(Resource.error("failed to get data from server",null))
+                    val response = remoteRepository.getProductOffline()
+                    _getProductOffline.postValue(Resource.error("failed to get data from server",response))
                 }
             } else {
                 val response = remoteRepository.getProductOffline()
@@ -102,18 +115,16 @@ class HomeViewModel(
     }
 
     fun getSearchProduct(productName : String) {
-        _isLoading.value = true
         _getProduct.postValue(Resource.loading(null))
         viewModelScope.launch {
             if (networkHelper.isNetworkConnected()) {
                 val params = HashMap<String,String>()
                 params["search"] = productName
+                params["status"] = "available"
                 try {
                     val product = remoteRepository.getProductBoundResource(params)
-                    _isLoading.value = false
-                    _getProduct.postValue(Resource.success(product))
+                    _getProduct.postValue(Resource.success(product.body()))
                 } catch (e: Exception) {
-                    _isLoading.value = false
                     _getProduct.postValue(Resource.error("failed to get data",null))
                 }
             } else {

@@ -123,6 +123,7 @@ class SellViewModel(
         productImage: File
     ) {
         viewModelScope.launch {
+            _postProduct.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     val requestFile = productImage.asRequestBody("image/jpeg".toMediaTypeOrNull())

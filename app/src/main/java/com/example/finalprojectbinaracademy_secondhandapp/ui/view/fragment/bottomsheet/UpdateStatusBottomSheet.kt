@@ -8,9 +8,11 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentUpdateStatusBottomSheetBinding
+import com.example.finalprojectbinaracademy_secondhandapp.ui.view.fragment.dialog.LoadingDialog
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.SaleListViewModel
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Status
 import com.example.finalprojectbinaracademy_secondhandapp.utils.errorToast
+import com.example.finalprojectbinaracademy_secondhandapp.utils.successToast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -60,19 +62,27 @@ class UpdateStatusBottomSheet : BottomSheetDialogFragment() {
             saleListViewModel.patchStatusProduct(productId, status)
             if (status == "available") {
                 saleListViewModel.patchOrder(idOrder, "declined")
+            } else {
+                saleListViewModel.patchOrder(idOrder, "accepted")
             }
         }
     }
 
     private fun checkUpdateStatus() {
+        val loadingDialog = LoadingDialog(requireContext())
         saleListViewModel.patchStatusProduct.observe(viewLifecycleOwner) {
             when (it.status) {
+                Status.LOADING -> {
+                    loadingDialog.startLoading()
+                }
                 Status.SUCCESS -> {
-                    Toast.makeText(requireContext(), "update success", Toast.LENGTH_SHORT).show()
+                    loadingDialog.dismissLoading()
+                    Toast(requireContext()).successToast("update berhasil...",requireContext())
                     dismiss()
                     findNavController().navigateUp()
                 }
                 Status.ERROR -> {
+                    loadingDialog.dismissLoading()
                     Toast(requireContext()).errorToast(it.message.toString(), requireContext())
                 }
             }

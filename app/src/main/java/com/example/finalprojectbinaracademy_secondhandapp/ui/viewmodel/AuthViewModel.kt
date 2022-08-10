@@ -58,7 +58,11 @@ class AuthViewModel(
                             setAccessToken(it.accessToken)
                         }
                     } else {
-                        _userlogin.postValue(Resource.error("Please check your credentials..",null))
+                        if (response.code() == 503) {
+                            _userlogin.postValue(Resource.error("Error connecting to server",null))
+                        } else {
+                            _userlogin.postValue(Resource.error("Please check your credentials..",null))
+                        }
                     }
                 } catch (e: Exception) {
                     _userlogin.postValue(Resource.error(e.message.toString(),null))

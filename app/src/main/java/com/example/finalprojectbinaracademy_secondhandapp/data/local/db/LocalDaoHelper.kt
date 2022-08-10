@@ -2,7 +2,7 @@ package com.example.finalprojectbinaracademy_secondhandapp.data.local.db
 
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.*
 
-class LocalDaoHelperImpl(private val localDao: LocalDao) {
+class LocalDaoHelper(private val localDao: LocalDao) {
 
     // product
     fun getAllProduct() = localDao.getAllProducts()

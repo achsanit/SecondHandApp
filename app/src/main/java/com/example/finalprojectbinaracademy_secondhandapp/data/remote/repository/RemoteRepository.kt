@@ -2,30 +2,30 @@ package com.example.finalprojectbinaracademy_secondhandapp.data.remote.repositor
 
 import android.util.Log
 import androidx.paging.*
-import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.*
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.Product
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.*
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 
 class RemoteRepository(
-    private val apiHelperImpl: ApiHelperImpl,
-    private val localDaoHelperImpl: LocalDaoHelperImpl
+    private val apiHelper: ApiHelper,
+    private val localDaoHelper: LocalDaoHelper
 ) {
 
     suspend fun registerUser(request: RegisterRequest): Response<RegisterResponse> {
-        return apiHelperImpl.registerUser(request)
+        return apiHelper.registerUser(request)
     }
 
     suspend fun loginUser(request: LoginRequest): Response<LoginResponse> {
-        return apiHelperImpl.loginUser(request)
+        return apiHelper.loginUser(request)
     }
 
     suspend fun getUser(accessToken: String): Response<RegisterResponse> {
-        return apiHelperImpl.getUser(accessToken)
+        return apiHelper.getUser(accessToken)
     }
 
     suspend fun updateProfile(
@@ -36,7 +36,7 @@ class RemoteRepository(
         city: RequestBody,
         image: MultipartBody.Part
     ): Response<RegisterResponse> {
-        return apiHelperImpl.updateProfile(accessToken, name, phone, address, city, image)
+        return apiHelper.updateProfile(accessToken, name, phone, address, city, image)
     }
 
     suspend fun changePassword(
@@ -45,55 +45,58 @@ class RemoteRepository(
         newPass: RequestBody,
         confirmPass: RequestBody
     ): Response<ChangePasswordResponse> {
-        return apiHelperImpl.changePassword(accessToken, currentPass, newPass, confirmPass)
+        return apiHelper.changePassword(accessToken, currentPass, newPass, confirmPass)
     }
 
     suspend fun getNotification(accessToken: String): List<Notification> {
-        val response = apiHelperImpl.getNotification(accessToken)
+        val response = apiHelper.getNotification(accessToken)
         Log.d("1244",response.toString())
-        localDaoHelperImpl.deleteInsertNotif(response)
+        localDaoHelper.deleteInsertNotif(response)
         return response
     }
 
     fun getNotifOffline(): List<Notification> {
-        return localDaoHelperImpl.getAllNotification()
+        return localDaoHelper.getAllNotification()
     }
 
     suspend fun readNotification(accessToken: String, id: Int): Response<ReadNotificationResponse> {
-        return apiHelperImpl.readNotification(accessToken, id)
+        return apiHelper.readNotification(accessToken, id)
     }
 
     suspend fun getBuyerProduct(page: Int): Response<List<GetProductResponseItem>> {
         val parameters = HashMap<String,String>()
         parameters["page"] = page.toString()
         parameters["per_page"] = "20"
-        return apiHelperImpl.getBuyerProduct(parameters)
+        return apiHelper.getBuyerProduct(parameters)
     }
 
     suspend fun getBuyerProductSearch(parameters: HashMap<String,String>): Response<List<GetProductResponseItem>> {
-        return apiHelperImpl.getBuyerProduct(parameters)
+        return apiHelper.getBuyerProduct(parameters)
     }
 
     suspend fun getBanner(): Response<List<Banner>> {
-        val response = apiHelperImpl.getBanner()
+        val response = apiHelper.getBanner()
         response.body()?.let {
-            localDaoHelperImpl.deleteInsertBanner(it)
+            localDaoHelper.deleteInsertBanner(it)
         }
         return response
     }
 
     fun getBannerOffline(): List<Banner> {
-        return localDaoHelperImpl.getALlBanner()
+        return localDaoHelper.getALlBanner()
     }
 
     fun getProductPaging() = Pager(
         config = PagingConfig(pageSize = 20),
-        pagingSourceFactory = {ProductPageSource(apiHelperImpl)}
+        pagingSourceFactory = {ProductPageSource(apiHelper)}
     ).liveData
 
-    suspend fun getProductBoundResource(params: HashMap<String,String>): List<Product> {
-        val response = apiHelperImpl.getProducBoundResource(params)
-        localDaoHelperImpl.deleteAndInsertData(response.take(40))
+    suspend fun getProductBoundResource(params: HashMap<String,String>): Response<List<Product>> {
+        val response = apiHelper.getProducBoundResource(params)
+        val data = response.body()
+        data?.let {
+            localDaoHelper.deleteAndInsertData(it.take(40))
+        }
         return response
     }
 
@@ -117,19 +120,19 @@ class RemoteRepository(
 //    )
 
     fun getProductOffline(): List<Product> {
-        return localDaoHelperImpl.getAllProduct()
+        return localDaoHelper.getAllProduct()
     }
 
     suspend fun getBuyerProductId(buyerId: Int): Response<GetResponseProductId> {
-        return apiHelperImpl.getBuyerProductId(buyerId)
+        return apiHelper.getBuyerProductId(buyerId)
     }
 
     suspend fun getCategory(): Response<CategoryResponse> {
-        return apiHelperImpl.getCategory()
+        return apiHelper.getCategory()
     }
 
     suspend fun getCategoryById(id: Int): Response<CategoryResponseItem> {
-        return apiHelperImpl.getCategoryById(id)
+        return apiHelper.getCategoryById(id)
     }
 
     suspend fun postProduct(
@@ -141,7 +144,7 @@ class RemoteRepository(
         location: RequestBody,
         productImage: MultipartBody.Part
     ): Response<PostProductResponse> {
-        return apiHelperImpl.postProduct(
+        return apiHelper.postProduct(
             accessToken,
             name,
             description,
@@ -157,43 +160,43 @@ class RemoteRepository(
         idOrder: Int,
         status: RequestBody
     ): Response<PostProductResponse> {
-        return apiHelperImpl.patchStatusProduct(accessToken, idOrder, status)
+        return apiHelper.patchStatusProduct(accessToken, idOrder, status)
     }
 
     suspend fun getSellerProduct(accessToken: String): Response<List<SellerProduct>> {
-        val response = apiHelperImpl.sellerGetProduct(accessToken)
+        val response = apiHelper.sellerGetProduct(accessToken)
         response.body()?.let {
-            localDaoHelperImpl.deleteAndInsertDataSeller(it)
+            localDaoHelper.deleteAndInsertDataSeller(it)
         }
         return response
     }
 
     fun getSellerProductOffline(): List<SellerProduct> {
-        return localDaoHelperImpl.getAllProductSeller()
+        return localDaoHelper.getAllProductSeller()
     }
 
     suspend fun getSellerOrder(
         accessToken: String,
         status: String
     ): Response<List<SellerOrder>> {
-        val response = apiHelperImpl.getSellerOrder(accessToken,status)
+        val response = apiHelper.getSellerOrder(accessToken,status)
         if (response.isSuccessful) {
             response.body()?.let {
-                localDaoHelperImpl.deleteAndInsertOrderSeller(it)
+                localDaoHelper.deleteAndInsertOrderSeller(it)
             }
         }
         return response
     }
 
     fun getSellerOrderOffline(): List<SellerOrder> {
-        return localDaoHelperImpl.getAllOrderSeller()
+        return localDaoHelper.getAllOrderSeller()
     }
 
     suspend fun getSellerOrderId(
         accessToken: String,
         idOrder: Int
     ): Response<GetSellerOrderResponseItem> {
-        return apiHelperImpl.getSellerOrderId(accessToken, idOrder)
+        return apiHelper.getSellerOrderId(accessToken, idOrder)
     }
 
     suspend fun patchOrder(
@@ -201,13 +204,13 @@ class RemoteRepository(
         idOrder: Int,
         status: RequestBody
     ): Response<PatchOrderResponse> {
-        return apiHelperImpl.patchOrder(accessToken, idOrder, status)
+        return apiHelper.patchOrder(accessToken, idOrder, status)
     }
     suspend fun postBuyerOrder(
         accessToken: String,
         request: PostBuyerOrderRequest
     ) : Response<PostBuyerOrderResponse>{
-        return apiHelperImpl.postBuyerOrder(accessToken, request)
+        return apiHelper.postBuyerOrder(accessToken, request)
     }
 
 }

@@ -2,47 +2,39 @@ package com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.datastore.DataStoreManager
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDao
-import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelperImpl
-import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.MyDatabase
+import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.LoginRequest
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.LoginResponse
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.RegisterRequest
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.RegisterResponse
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.repository.RemoteRepository
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiService
 import com.example.finalprojectbinaracademy_secondhandapp.utils.NetworkHelper
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.*
-import org.robolectric.RobolectricTestRunner
 import retrofit2.Response
-import java.util.regex.Matcher
 
 @RunWith(AndroidJUnit4::class)
 class AuthViewModelTest {
 
-    private lateinit var apiHelperImpl: ApiHelperImpl
-    private lateinit var localDaoHelperImpl: LocalDaoHelperImpl
+    private lateinit var apiHelper: ApiHelper
+    private lateinit var localDaoHelper: LocalDaoHelper
     private lateinit var remoteRepository: RemoteRepository
     private lateinit var dataStoreManager: DataStoreManager
     private lateinit var networkHelper: NetworkHelper
@@ -67,10 +59,10 @@ class AuthViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         Dispatchers.setMain(testDispatcher)
-        apiHelperImpl = ApiHelperImpl(apiService)
+        apiHelper = ApiHelper(apiService)
         val context = ApplicationProvider.getApplicationContext<Context>()
-        localDaoHelperImpl = LocalDaoHelperImpl(localDao)
-        remoteRepository = RemoteRepository(apiHelperImpl,localDaoHelperImpl)
+        localDaoHelper = LocalDaoHelper(localDao)
+        remoteRepository = RemoteRepository(apiHelper,localDaoHelper)
         dataStoreManager = DataStoreManager(context)
         networkHelper = NetworkHelper(context)
 

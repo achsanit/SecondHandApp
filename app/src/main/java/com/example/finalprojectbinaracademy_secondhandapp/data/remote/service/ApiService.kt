@@ -69,7 +69,7 @@ interface ApiService {
     @GET("buyer/product")
     suspend fun getProductBoundResource(
         @QueryMap parameters: HashMap<String,String>
-    ): List<Product>
+    ): Response<List<Product>>
 
     //Get product buyer {id}
     @GET("buyer/product/{id}")

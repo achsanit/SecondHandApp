@@ -7,29 +7,25 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.datastore.DataStoreManager
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDao
-import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.local.db.LocalDaoHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.GetResponseProductId
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.PostBuyerOrderRequest
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.PostBuyerOrderResponse
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.User
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.repository.RemoteRepository
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelperImpl
+import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiHelper
 import com.example.finalprojectbinaracademy_secondhandapp.data.remote.service.ApiService
 import com.example.finalprojectbinaracademy_secondhandapp.utils.NetworkHelper
 import com.example.finalprojectbinaracademy_secondhandapp.utils.Resource
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Assert.*
 
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runner.manipulation.Ordering
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -38,8 +34,8 @@ import retrofit2.Response
 @RunWith(AndroidJUnit4::class)
 class BuyerDetailViewModelTest {
 
-    private lateinit var localDaoHelperImpl: LocalDaoHelperImpl
-    private lateinit var apiHelperImpl: ApiHelperImpl
+    private lateinit var localDaoHelper: LocalDaoHelper
+    private lateinit var apiHelper: ApiHelper
     private lateinit var remoteRepository: RemoteRepository
     private lateinit var dataStoreManager: DataStoreManager
     private lateinit var networkHelper: NetworkHelper
@@ -62,9 +58,9 @@ class BuyerDetailViewModelTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         val context = ApplicationProvider.getApplicationContext<Context>()
-        localDaoHelperImpl = LocalDaoHelperImpl(localDao)
-        apiHelperImpl = ApiHelperImpl(apiService)
-        remoteRepository = RemoteRepository(apiHelperImpl,localDaoHelperImpl)
+        localDaoHelper = LocalDaoHelper(localDao)
+        apiHelper = ApiHelper(apiService)
+        remoteRepository = RemoteRepository(apiHelper,localDaoHelper)
         dataStoreManager = DataStoreManager(context)
         networkHelper = NetworkHelper(context)
 

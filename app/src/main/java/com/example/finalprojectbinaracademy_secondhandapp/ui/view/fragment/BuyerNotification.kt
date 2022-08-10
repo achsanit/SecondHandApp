@@ -11,8 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalprojectbinaracademy_secondhandapp.R
 import com.example.finalprojectbinaracademy_secondhandapp.data.local.model.Notification
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.NotificationItemResponse
-import com.example.finalprojectbinaracademy_secondhandapp.data.remote.model.NotificationResponse
 import com.example.finalprojectbinaracademy_secondhandapp.databinding.FragmentBuyerNotificationBinding
 import com.example.finalprojectbinaracademy_secondhandapp.ui.adapter.NotifAdapter
 import com.example.finalprojectbinaracademy_secondhandapp.ui.viewmodel.NotificationViewModel
@@ -42,11 +40,10 @@ class BuyerNotification : Fragment(R.layout.fragment_buyer_notification) {
     private fun checkUserLogin() {
         notificationViewModel.getStatusLogin().observe(viewLifecycleOwner, Observer {
             if (it) {
-                binding.pbNotif.visibility = View.VISIBLE
                 observeNotification()
                 binding.notLogin.visibility = View.GONE
             } else {
-                binding.pbNotif.visibility = View.GONE
+                binding.shimmer.visibility = View.GONE
             }
         })
     }
@@ -60,15 +57,22 @@ class BuyerNotification : Fragment(R.layout.fragment_buyer_notification) {
                     }
                 }
                 Status.ERROR -> {
-                    Toast.makeText(requireContext(),it.message,Toast.LENGTH_LONG).show()
+                    binding.shimmer.stopShimmer()
+                    binding.shimmer.visibility = View.GONE
                 }
-                Status.LOADING -> {}
+                Status.LOADING -> {
+                    binding.recylcerView.visibility = View.INVISIBLE
+                    binding.shimmer.visibility = View.VISIBLE
+                    binding.shimmer.startShimmer()
+                }
             }
         })
     }
 
     private fun setupView(data: List<Notification>) {
-        binding.pbNotif.visibility = View.GONE
+        binding.shimmer.stopShimmer()
+        binding.shimmer.visibility = View.GONE
+        binding.recylcerView.visibility = View.VISIBLE
         val adapter = NotifAdapter(object : NotifAdapter.OnClickListener {
             override fun onClickItem(data: Notification) {
                 notificationViewModel.readNotification(data.id)

@@ -8,7 +8,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 
-class ApiHelperImpl(private val apiService: ApiService) {
+class ApiHelper(private val apiService: ApiService) {
 
     suspend fun registerUser(request: RegisterRequest): Response<RegisterResponse> {
         return apiService.registerUser(request)
@@ -54,7 +54,7 @@ class ApiHelperImpl(private val apiService: ApiService) {
         return apiService.getBuyerProduct(parameters)
     }
 
-    suspend fun getProducBoundResource(parameters: HashMap<String, String>) : List<Product> {
+    suspend fun getProducBoundResource(parameters: HashMap<String, String>) : Response<List<Product>> {
         return apiService.getProductBoundResource(parameters)
     }
 

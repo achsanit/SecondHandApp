@@ -28,6 +28,7 @@ class NotificationViewModel(
 
     fun getNotif() {
         viewModelScope.launch {
+            _listNotif.postValue(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 try {
                     dataStore.getAccessToken().collectLatest {

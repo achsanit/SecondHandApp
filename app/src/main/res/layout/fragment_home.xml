@@ -31,7 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/custom_input"
                     android:ems="10"
                     android:fontFamily="@font/poppins"
@@ -46,20 +46,49 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="HardcodedText" />
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_banner"
+                    android:layout_width="0dp"
+                    android:layout_height="240dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewSearch">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include layout="@layout/banner_shimmer"/>
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/piewpager"
                     android:layout_width="0dp"
-                    android:layout_height="200dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_height="240dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textViewSearch" />
+
+                <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
+                    android:id="@+id/indicatorSlider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/piewpager"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginBottom="16dp"
+                    app:spi_dotSelectedColor="@color/white"
+                    app:spi_dotSize="5dp"
+                    app:spi_visibleDotCount="5"
+                    />
 
                 <LinearLayout
                     android:id="@+id/llllll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="16dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -76,9 +105,9 @@
                         app:layout_constraintTop_toBottomOf="@id/Header" />
 
                     <RelativeLayout
-                        android:layout_marginTop="10dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10dp">
 
                         <HorizontalScrollView
                             android:layout_width="match_parent"
@@ -230,23 +259,6 @@
 
                 </LinearLayout>
 
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/progressBarBanner"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="50dp"
-                    android:indeterminate="true"
-                    app:indicatorColor="@color/secondary"
-                    app:layout_constraintBottom_toBottomOf="@id/piewpager"
-                    app:layout_constraintLeft_toLeftOf="@id/piewpager"
-                    app:layout_constraintRight_toRightOf="@id/piewpager"
-                    app:layout_constraintTop_toTopOf="@id/piewpager"
-                    app:trackCornerRadius="8dp"
-                    tools:visibility="visible" />
-
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -264,6 +276,36 @@
                 app:layout_constraintTop_toTopOf="@id/rv_productHome"
                 app:trackCornerRadius="8dp"
                 tools:visibility="visible" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_product"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/progressBar">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="4dp"
+                        android:orientation="horizontal">
+                        <include layout="@layout/product_shimmer"/>
+                        <include layout="@layout/product_shimmer"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="4dp"
+                        android:orientation="horizontal">
+                        <include layout="@layout/product_shimmer"/>
+                        <include layout="@layout/product_shimmer"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_productHome"

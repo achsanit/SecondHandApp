@@ -59,14 +59,14 @@ class DaftarJual : Fragment(R.layout.fragment_daftar_jual) {
         saleListViewModel.seller.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.LOADING -> {
-                    binding.pbNotifDaftarJual.visibility = View.VISIBLE
+//                    binding.pbNotifDaftarJual.visibility = View.VISIBLE
                 }
                 Status.SUCCESS -> {
-                    binding.pbNotifDaftarJual.visibility = View.GONE
+//                    binding.pbNotifDaftarJual.visibility = View.GONE
                     setupView(it.data)
                 }
                 Status.ERROR -> {
-                    binding.pbNotifDaftarJual.visibility = View.GONE
+//                    binding.pbNotifDaftarJual.visibility = View.GONE
                 }
             }
         }
